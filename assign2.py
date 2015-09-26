@@ -23,6 +23,7 @@ from assign2_support import *
 
 from collections import OrderedDict
 
+
 class AnimalDataPlotApp(object):
 
     def __init__(self, master):
@@ -33,7 +34,7 @@ class AnimalDataPlotApp(object):
 
         master.title("AnimalDataPlotApp")
 
-        #create the menu
+        # create the menu
         menu_bar = tk.Menu(master)
         master.config(menu = menu_bar)
 
@@ -41,12 +42,12 @@ class AnimalDataPlotApp(object):
         menu_bar.add_cascade(label="File", menu=file_menu)
         file_menu.add_command(label="Open", command=self.open_file)
 
-        #close window
+        # close window
         master.protocol("WM_DELETE_WINDOW", self.close)
 
+        # plotter window
         self._Plotter = Plotter(master, self._data)
         self._Plotter.pack(side = tk.RIGHT, fill = tk.Y, expand = False)
-
 
     def open_file(self):
         self._filename = filedialog.askopenfilename()
@@ -55,7 +56,6 @@ class AnimalDataPlotApp(object):
             self._data.load_data(self._filename)
             self._Plotter.plot_animal_data()
             self._SelectionBox.add_button()
-
 
     def check(self, filename):
         base = os.path.basename(filename)
@@ -76,63 +76,77 @@ class AnimalDataPlotApp(object):
                 return False
         return True
 
-
     def close(self):
         self._master.destroy()
 
-class AnimalData ():
 
+class AnimalData (object):
 
     def __init__(self):
-        pass
-
+        self._animals_list = []
+        self._animals_data = []
+        self._selected = []
 
     def load_data(self, filename):
-        pass
-
+        self._animals_data.append(AnimalDataSet(filename))
+        self._selected.append(1)
+        animal_name = AnimalDataSet(filename).get_name()
+        self._animals_list.append(animal_name)
 
     def get_animal_names(self):
-        pass
-
+        return self._animals_list
 
     def get_animal(self, animal):
-        pass
+        temp = OrderedDict()
+        for i, s in enumerate(self._animals_list):
+            temp[s] = self._animals_data[i]
 
+        return temp[animal]
 
     def is_selected(self, index):
-        pass
-
+        if self._selected[index] == 1:
+            return True
+        return False
 
     def select(self, index):
-        pass
-
+        if self._selected[index] == 0:
+            self._selected[index] = 1
 
     def deselect(self, index):
-        pass
-
+        if self._selected[index] == 1:
+            self._selected[index] = 0
 
     def get_ranges(self):
-        pass
+        heights_min = []
+        heights_max = []
+        weights_min = []
+        weights_max = []
 
+        for animal_data in self._animals_data:
+            heights_min.append(animal_data.get_height_range()[0])
+            heights_max.append(animal_data.get_height_range()[1])
+            weights_min.append(animal_data.get_width_range()[0])
+            weights_max.append(animal_data.get_height_range()[1])
+        if heights_min:
+            return min(heights_min), max(heights_max), min(weights_min), max(weights_max)
 
     def to_tabbed_string(self, index):
         pass
 
 
+class Plotter(tk.Canvas):
 
-class Plotter():
-
-    def __init__(self):
-        pass
-
+    def __init__(self, master, data):
+        super(Plotter, self).__init__(master, bg="white", relief=tk.SUNKEN)
+        self._data = data
+        self._width = None
+        self._height = None
 
 
 class SelectionBox():
 
     def __init__(self):
         pass
-
-
 
 
 class SummaryWindow():
