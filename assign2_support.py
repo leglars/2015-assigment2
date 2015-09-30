@@ -116,8 +116,7 @@ class CoordinateTranslator(object):
         After the Canvas resizes, call this method to fix the scaling.
         """
         self._xscale = (self._max_height - self._min_height) / width
-        self._yscale = (self._max_weight - self._min_weight) /\
-                height
+        self._yscale = (self._max_weight - self._min_weight) / height
         self._width = width
         self._height = height
 
