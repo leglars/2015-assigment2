@@ -254,7 +254,7 @@ class DataDisplay(tk.Frame):
 class SelectionBox(tk.Listbox):
 
     def __init__(self, master, data):
-        super(SelectionBox, self).__init__(master, bg="white")
+        super(SelectionBox, self).__init__(master, bg="white"56)
 
         self._master = master
         self._data = data
