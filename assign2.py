@@ -34,8 +34,6 @@ class AnimalDataPlotApp(object):
 
         self._master.title("AnimalDataPlotApp")
 
-        self._master.rowconfigure(1, weight=1)
-        self._master.columnconfigure(0, weight=1)
 
         # create the menu
         menu_bar = tk.Menu(self._master)
@@ -47,20 +45,24 @@ class AnimalDataPlotApp(object):
 
         self._left_frame = tk.Frame(self._master, background="white")
         self._right_frame = tk.Frame(master, background="red")
+
         self._Plotter = Plotter(self._right_frame, self._data)
 
-        tk.Label(self._left_frame, text="Animal Data Sets").pack(fill=tk.X, expand=False)
-        # sub_frame = tk.Frame(self._left_frame, background="blue").pack(fill=tk.Y, side=tk.BOTTOM)
-        self._SelectionBox = SelectionBox(self._left_frame, self._data)
-        self._SelectionButtonFrame = SelectionButtonFrame(self._left_frame, self._SelectionBox, self._data, self._Plotter)
+        # left_frame start from here
+        tk.Label(self._left_frame, text="Animal Data Sets").pack(fill=tk.X, expand=False)  # first label
+        self._SelectionBox = SelectionBox(self._left_frame, self._data)  # init selectionBox
 
+        self._left_button_frame = tk.Frame(self._left_frame)
+        self._SelectionButtonFrame = SelectionButtonFrame(self._left_button_frame, self._SelectionBox, self._data, self._Plotter)
         self._SelectionButtonFrame.add_button()
+        self._SelectionButtonFrame.pack(side=tk.TOP, expand=False, fill=tk.X)
+        self._left_button_frame.pack()
 
-        self._SelectionButtonFrame.pack(fill=tk.X, side=tk.TOP, expand=False)
-        self._SelectionBox.pack(fill=tk.Y, side=tk.TOP, expand=True)
-
+        self._SelectionBox.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
         self._left_frame.pack(fill=tk.Y, side=tk.LEFT, anchor=tk.NW)
+        # left frame end
 
+        # right frame start from here
         self._data_display = DataDisplay(self._right_frame)
         self._data_display.draw()
         self._data_display.pack(fill=tk.X, side=tk.TOP, expand=False)
@@ -254,7 +256,7 @@ class DataDisplay(tk.Frame):
 class SelectionBox(tk.Listbox):
 
     def __init__(self, master, data):
-        super(SelectionBox, self).__init__(master, bg="white"56)
+        super(SelectionBox, self).__init__(master, bg="white")
 
         self._master = master
         self._data = data
