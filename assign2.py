@@ -22,6 +22,7 @@ from assign2_support import *
 # Add your code here
 
 from collections import OrderedDict
+import statistics 
 
 
 class AnimalDataPlotApp(object):
@@ -80,8 +81,6 @@ class AnimalDataPlotApp(object):
 
         if self.check(self._filename):
             self._data.load_data(self._filename)
-            print(self._data.get_animal_names())
-
             self._Plotter.plot_animals_data()
             self._SelectionBox.draw()
 
@@ -92,7 +91,7 @@ class AnimalDataPlotApp(object):
                 msg = filename + " is not a suitable data file"
                 messagebox.showerror(title="File Error", message=msg)
                 return False
-            else:
+            else: # choose no file
                 return False
 
         animal = base.replace(".csv", "")
@@ -165,13 +164,15 @@ class AnimalData (object):
 class Plotter(tk.Canvas):
 
     def __init__(self, master, data):
-        super(Plotter, self).__init__(master, bg="white", relief=tk.SUNKEN, width=650)
+        super(Plotter, self).__init__(master, bg="white", width=650)
         self._data = data
         self._width = None
         self._high = None
         self._translator = None
         self._height = 0.0
         self._weight = 0.0
+        self._x = 0.0
+        self._y = 0.0
 
         self.bind("<Configure>", self.can_resize)
         self.bind("<Motion>", self.mouse_move)
@@ -203,17 +204,20 @@ class Plotter(tk.Canvas):
                     start_y -= 2
                     end_x, end_y = start_x+4, start_y+4
                     self.create_rectangle(start_x, start_y, end_x, end_y, fill=COLOURS[index], outline="")
-        if self._height and self._weight:
+        if self._x and self._y:
             self.draw_line()
 
     def draw_line(self):
         ranges = self._data.get_ranges()
-        start_x, start_y = self._translator.get_coords(self._height, ranges[2])
-        end_x, end_y = self._translator.get_coords(self._height, ranges[3])
+
+        # horizontal line
+        start_x, start_y = 0, self._y
+        end_x, end_y = 10000, self._y
         self.create_line(start_x, start_y, end_x, end_y, fill='black')
 
-        start_x, start_y = self._translator.get_coords(ranges[0], self._weight)
-        end_x, end_y = self._translator.get_coords(ranges[1], self._weight)
+        #vertical line
+        start_x, start_y = self._x, 0
+        end_x, end_y = self._x, 10000
         self.create_line(start_x, start_y, end_x, end_y, fill='black')
 
     def can_resize(self, event):
@@ -227,15 +231,13 @@ class Plotter(tk.Canvas):
 
     def mouse_move(self, event):
         if self._data.get_animal_names():
-            x = event.x
-            y = event.y
-            self._height = self._translator.get_height(x)
-            self._weight = self._translator.get_weight(y)
+            self._x = event.x
+            self._y = event.y
             self.plot_animals_data()
 
     def mouse_leave(self, event):
-        self._height = 0.0
-        self._weight = 0.0
+        self._x = 0.0
+        self._y = 0.0
         self.plot_animals_data()
 
 
@@ -272,6 +274,8 @@ class SelectionBox(tk.Listbox):
                     self.delete(0)
             for index, name in enumerate(name_list):
                 self.insert(index, name)
+                self.configure(font=SELECTION_FONT)
+                self.itemconfig(index, foreground=COLOURS[index])
 
 
 class SelectionButtonFrame(tk.Frame):
@@ -298,6 +302,7 @@ class SelectionButtonFrame(tk.Frame):
 
         self._selection.bind("<Button-1>", self.set_selection)
         self._deselection.bind("<Button-1>", self.set_deselection)
+        self._summery.bind("<Button-1>", self.show_summary)
 
     def set_selection(self, event):
         if self._data.get_animal_names() and self._selection_box.curselection():
@@ -313,11 +318,51 @@ class SelectionButtonFrame(tk.Frame):
             self._plotter.plot_animals_data()
             print(self._data._selected)
 
+    def show_summary(self, event):
+        summary = SummaryWindow(tk.Toplevel(), self._data)
+        summary.summarise(self._selection_box.curselection()[0])
 
-class SummaryWindow():
 
-    def __init__(self):
-        pass
+class SummaryWindow(tk.Toplevel):
+
+    def __init__(self, master, data):
+        # super(SummaryWindow, self).__init__(master)
+
+        self._data = data
+
+        self._master = master
+        self._frame = tk.Frame(self._master).pack()
+        self._master.title("Animal Statistic Summary")
+
+        self._animalNameLabel = tk.Label(self._frame, text = "")
+        self._animalNameLabel.pack()
+        self._dataPointsLabel = tk.Label(self._frame, text = "")
+        self._dataPointsLabel.pack()
+        self._weightMeansLabel = tk.Label(self._frame, text = "")
+        self._weightMeansLabel.pack()
+        self._heightMeansLabel = tk.Label(self._frame, text = "")
+        self._heightMeansLabel.pack()
+        self._weightStdLabel = tk.Label(self._frame, text = "")
+        self._weightStdLabel.pack()
+        self._heightStdLabel = tk.Label(self._frame, text = "")
+        self._heightStdLabel.pack()
+
+    def summarise(self, index):
+        animal_names = self._data.get_animal_names()[index]
+        data_points = len(load_data_set(self._data.get_animal_names()[index]+'.csv'))
+        weight_list = [i[1] for i in load_data_set(self._data.get_animal_names()[index]+'.csv')]
+        weight_mean = round((lambda x, y: x+y, weight_list) / len(weight_list), 2)
+        weight_std = round(statistics.pstdev(weight_list), 2)
+        height_list = [i[0] for i in load_data_set(self._data.get_animal_names()[index]+'.csv')]
+        height_mean = round((lambda x, y: x+y, height_list) / len(height_list), 2)
+        height_std = round(statistics.pstdev(height_list), 2)
+
+        self._animalNameLabel.config(text="Animal: " + animal_names)
+        self._dataPointsLabel.config(text="Data points:      " + str(data_points))
+        self._weightMeansLabel.config(text="Weight means:     " + str(weight_mean))
+        self._heightMeansLabel.config(text="Height means:     " + str(height_mean))
+        self._weightStdLabel.config(text="Weight std dev:     " + str(weight_std))
+        self._heightStdLabel.config(text="Height std dev:     " + str(height_std))
 
 
 
