@@ -17,7 +17,7 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/2015-assigment2$assign2.coverage" NAME="assign2 Coverage Results" MODIFIED="1444577470769" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2015-assigment2$assign2.coverage" NAME="assign2 Coverage Results" MODIFIED="1444578169325" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -31,8 +31,8 @@
       <file leaf-file-name="assign2.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/assign2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.38223937">
-              <caret line="310" column="52" selection-start-line="310" selection-start-column="52" selection-end-line="310" selection-end-column="52" />
+            <state vertical-scroll-proportion="-0.27799228">
+              <caret line="332" column="37" selection-start-line="332" selection-start-column="37" selection-end-line="332" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -395,7 +395,13 @@
       <option name="project" value="LOCAL" />
       <updated>1444575447297</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="data display done">
+      <created>1444577815375</created>
+      <option name="number" value="00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1444577815375</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -440,7 +446,8 @@
     <MESSAGE value="most functionality finish" />
     <MESSAGE value="gui normal" />
     <MESSAGE value="to_tabbed_string done" />
-    <option name="LAST_COMMIT_MESSAGE" value="to_tabbed_string done" />
+    <MESSAGE value="data display done" />
+    <option name="LAST_COMMIT_MESSAGE" value="data display done" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -798,8 +805,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/assign2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38223937">
-          <caret line="310" column="52" selection-start-line="310" selection-start-column="52" selection-end-line="310" selection-end-column="52" />
+        <state vertical-scroll-proportion="-0.27799228">
+          <caret line="332" column="37" selection-start-line="332" selection-start-column="37" selection-end-line="332" selection-end-column="37" />
           <folding />
         </state>
       </provider>

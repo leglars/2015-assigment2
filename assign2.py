@@ -307,11 +307,11 @@ class SelectionButtonFrame(tk.Frame):
         self._plotter = plotter
 
     def add_button(self):
-        self._selection = tk.Button(self._master, text=" Selection ")
+        self._selection = tk.Button(self._master, text="  Selection  ")
         self._selection.pack(fill=tk.X, side=tk.LEFT)
-        self._deselection = tk.Button(self._master, text=" Deselection ")
+        self._deselection = tk.Button(self._master, text="  Deselection  ")
         self._deselection.pack(fill=tk.X, side=tk.LEFT)
-        self._summery = tk.Button(self._master, text=" Summery ")
+        self._summery = tk.Button(self._master, text="  Summery  ")
         self._summery.pack(fill=tk.X, side=tk.LEFT)
 
         self._selection.bind("<Button-1>", self.set_selection)
@@ -323,14 +323,14 @@ class SelectionButtonFrame(tk.Frame):
             index = self._selection_box.curselection()[0]
             self._data.select(index)
             self._plotter.plot_animals_data()
-            print(self._data._selected)
+            self._selection_box.draw()
 
     def set_deselection(self, event):
         if self._data.get_animal_names() and self._selection_box.curselection():
             index = self._selection_box.curselection()[0]
             self._data.deselect(index)
             self._plotter.plot_animals_data()
-            print(self._data._selected)
+            self._selection_box.draw()
 
     def show_summary(self, event):
         summary = SummaryWindow(tk.Toplevel(), self._data)
