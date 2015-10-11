@@ -158,7 +158,14 @@ class AnimalData (object):
             return min(heights_min), max(heights_max), min(weights_min), max(weights_max)
 
     def to_tabbed_string(self, index):
-        pass
+        if self._selected[index] == 1:
+            return LABEL_FORMAT.format(self._animals_list[index],
+                                       len(self.get_animal(self._animals_list[index])._points),
+                                       "Visible")
+        else:
+            return LABEL_FORMAT.format(self._animals_list[index],
+                                       len(self.get_animal(self._animals_list[index])._points),
+                                       "Hidden")
 
 
 class Plotter(tk.Canvas):
@@ -273,7 +280,7 @@ class SelectionBox(tk.Listbox):
                 for index in range(list_size):
                     self.delete(0)
             for index, name in enumerate(name_list):
-                self.insert(index, name)
+                self.insert(index, self._data.to_tabbed_string(index))
                 self.configure(font=SELECTION_FONT)
                 self.itemconfig(index, foreground=COLOURS[index])
 
@@ -293,11 +300,11 @@ class SelectionButtonFrame(tk.Frame):
         self._plotter = plotter
 
     def add_button(self):
-        self._selection = tk.Button(self._master, text="Selection")
+        self._selection = tk.Button(self._master, text=" Selection ")
         self._selection.pack(fill=tk.X, side=tk.LEFT)
-        self._deselection = tk.Button(self._master, text="Deselection")
+        self._deselection = tk.Button(self._master, text=" Deselection ")
         self._deselection.pack(fill=tk.X, side=tk.LEFT)
-        self._summery = tk.Button(self._master, text="Summery")
+        self._summery = tk.Button(self._master, text=" Summery ")
         self._summery.pack(fill=tk.X, side=tk.LEFT)
 
         self._selection.bind("<Button-1>", self.set_selection)
