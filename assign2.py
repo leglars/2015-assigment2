@@ -47,7 +47,11 @@ class AnimalDataPlotApp(object):
         self._left_frame = tk.Frame(self._master, background="white")
         self._right_frame = tk.Frame(master, background="red")
 
-        self._Plotter = Plotter(self._right_frame, self._data)
+        # right frame start from here
+        self._data_display_frame = tk.Frame(self._right_frame)
+        self._data_display = DataDisplay(self._data_display_frame)
+        self._data_display_frame.pack(fill=tk.X)
+        self._Plotter = Plotter(self._right_frame, self._data, self._data_display)
 
         # left_frame start from here
         tk.Label(self._left_frame, text="Animal Data Sets").pack(fill=tk.X, expand=False)  # first label
@@ -63,14 +67,11 @@ class AnimalDataPlotApp(object):
         self._left_frame.pack(fill=tk.Y, side=tk.LEFT, anchor=tk.NW)
         # left frame end
 
-        # right frame start from here
-        self._data_display = DataDisplay(self._right_frame)
-        self._data_display.draw()
-        self._data_display.pack(fill=tk.X, side=tk.TOP, expand=False)
 
-        # plotter window
 
-        self._Plotter.pack(fill=tk.BOTH, side=tk.BOTTOM, expand=True)
+        # right frame pack from here
+        # self._data_display.pack(fill=tk.X, side=tk.TOP, expand=True)
+        self._Plotter.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
         self._right_frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         # close window
@@ -170,9 +171,10 @@ class AnimalData (object):
 
 class Plotter(tk.Canvas):
 
-    def __init__(self, master, data):
+    def __init__(self, master, data, data_frame):
         super(Plotter, self).__init__(master, bg="white", width=650)
         self._data = data
+        self._data_frame = data_frame
         self._width = None
         self._high = None
         self._translator = None
@@ -242,6 +244,10 @@ class Plotter(tk.Canvas):
             self._y = event.y
             self.plot_animals_data()
 
+            self._height = round(self._translator.get_height(self._x), 2)
+            self._weight = round(self._translator.get_weight(self._y), 2)
+            self._data_frame.draw(self._height, self._weight)
+
     def mouse_leave(self, event):
         self._x = 0.0
         self._y = 0.0
@@ -251,15 +257,16 @@ class Plotter(tk.Canvas):
 class DataDisplay(tk.Frame):
 
     def __init__(self, master):
-        super().__init__(master)
 
         self._master = master
-        self._height_label = None
-        self._weight_label = None
+        self._label = tk.Label(self._master, text="")
+        self._label.pack(fill=tk.X, expand=True)
 
-    def draw(self):
-        self._height_label = tk.Label(self, text="Height: ").pack(side=tk.LEFT)
-        self._weight_label = tk.Label(self, text="Weight: ").pack(side=tk.LEFT)
+
+
+    def draw(self, height, weight):
+        label = "Height: " + str(height) + "cm,  Weight: " + str(weight) + "kg"
+        self._label.configure(text=label)
 
 
 class SelectionBox(tk.Listbox):
