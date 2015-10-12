@@ -58,7 +58,7 @@ class AnimalDataPlotApp(object):
         self._SelectionBox = SelectionBox(self._left_frame, self._data)  # init selectionBox
 
         self._left_button_frame = tk.Frame(self._left_frame)
-        self._SelectionButtonFrame = SelectionButtonFrame(self._left_button_frame, self._SelectionBox, self._data, self._Plotter)
+        self._SelectionButtonFrame = SelectionButtonFrame(self._left_button_frame, self._SelectionBox, self._data, self._Plotter, self._master)
         self._SelectionButtonFrame.add_button()
         self._SelectionButtonFrame.pack(side=tk.TOP, expand=False, fill=tk.X)
         self._left_button_frame.pack()
@@ -294,10 +294,11 @@ class SelectionBox(tk.Listbox):
 
 class SelectionButtonFrame(tk.Frame):
 
-    def __init__(self, master, selection_box, data, plotter):
+    def __init__(self, master, selection_box, data, plotter, root):
         super().__init__(master)
 
         self._master = master
+        self._root =root
         self._selection = None
         self._deselection = None
         self._summery = None
@@ -305,6 +306,8 @@ class SelectionButtonFrame(tk.Frame):
         self._selection_box = selection_box
         self._data = data
         self._plotter = plotter
+
+        self._summery_window_opened = False
 
     def add_button(self):
         self._selection = tk.Button(self._master, text="  Selection  ")
@@ -333,20 +336,26 @@ class SelectionButtonFrame(tk.Frame):
             self._selection_box.draw()
 
     def show_summary(self, event):
-        summary = SummaryWindow(tk.Toplevel(), self._data)
-        summary.summarise(self._selection_box.curselection()[0])
+        if not self._summery_window_opened:
+            summary = SummaryWindow(self._root, self._data, self)
+            summary.summarise(self._selection_box.curselection()[0])
+            self._summery_window_opened = True
+
+    def close_summary_window(self):
+        self._summery_window_opened = False
 
 
-class SummaryWindow(tk.Toplevel):
+class SummaryWindow():
 
-    def __init__(self, master, data):
-        # super(SummaryWindow, self).__init__(master)
+    def __init__(self, master, data, selection_button_frame):
+        self._summary_window = tk.Toplevel(master)
 
         self._data = data
+        self._selection_button_frame = selection_button_frame
+        self._summary_window.title("Animal Statistic Summary")
+        self._frame = tk.Frame(self._summary_window)
+        self._frame.pack()
 
-        self._master = master
-        self._frame = tk.Frame(self._master).pack()
-        self._master.title("Animal Statistic Summary")
 
         self._animalNameLabel = tk.Label(self._frame, text = "")
         self._animalNameLabel.pack()
@@ -361,22 +370,32 @@ class SummaryWindow(tk.Toplevel):
         self._heightStdLabel = tk.Label(self._frame, text = "")
         self._heightStdLabel.pack()
 
-    def summarise(self, index):
-        animal_names = self._data.get_animal_names()[index]
-        data_points = len(load_data_set(self._data.get_animal_names()[index]+'.csv'))
-        weight_list = [i[1] for i in load_data_set(self._data.get_animal_names()[index]+'.csv')]
-        weight_mean = round((lambda x, y: x+y, weight_list) / len(weight_list), 2)
-        weight_std = round(statistics.pstdev(weight_list), 2)
-        height_list = [i[0] for i in load_data_set(self._data.get_animal_names()[index]+'.csv')]
-        height_mean = round((lambda x, y: x+y, height_list) / len(height_list), 2)
-        height_std = round(statistics.pstdev(height_list), 2)
+        self._summary_window.protocol("WM_DELETE_WINDOW", self.close)
 
-        self._animalNameLabel.config(text="Animal: " + animal_names)
+    def summarise(self, index):
+        animal_name = self._data.get_animal_names()[index]
+        points = self._data.get_animal(animal_name).get_data_points()
+        data_points = len(points)
+
+        heights = [x for x, y in points]
+        weights = [y for x, y in points]
+        weight_mean = round(statistics.mean(weights), 2)
+        weight_std = round(statistics.pstdev(weights), 2)
+        height_mean = round(statistics.mean(heights), 2)
+        height_std = round(statistics.pstdev(heights), 2)
+
+        print(weight_mean, weight_std, height_mean, height_std)
+
+        self._animalNameLabel.config(text="Animal:     " + animal_name)
         self._dataPointsLabel.config(text="Data points:      " + str(data_points))
         self._weightMeansLabel.config(text="Weight means:     " + str(weight_mean))
         self._heightMeansLabel.config(text="Height means:     " + str(height_mean))
         self._weightStdLabel.config(text="Weight std dev:     " + str(weight_std))
         self._heightStdLabel.config(text="Height std dev:     " + str(height_std))
+
+    def close(self):
+        self._selection_button_frame.close_summary_window()
+        self._summary_window.destroy()
 
 
 
