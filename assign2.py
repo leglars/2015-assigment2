@@ -182,6 +182,7 @@ class Plotter(tk.Canvas):
         self._weight = 0.0
         self._x = 0.0
         self._y = 0.0
+        self._dot_width = 5
 
         self.bind("<Configure>", self.can_resize)
         self.bind("<Motion>", self.mouse_move)
@@ -211,7 +212,7 @@ class Plotter(tk.Canvas):
                     start_x, start_y = self._translator.get_coords(height, weight)
                     start_x -= 2
                     start_y -= 2
-                    end_x, end_y = start_x+4, start_y+4
+                    end_x, end_y = start_x + self._dot_width, start_y + self._dot_width
                     self.create_rectangle(start_x, start_y, end_x, end_y, fill=COLOURS[index], outline="")
         if self._x and self._y:
             self.draw_line()
